@@ -1,4 +1,5 @@
 import pygame
+import math
 from pygame.locals import *
 from datetime import datetime
 from preferences import *
@@ -18,6 +19,7 @@ class MechanicalWatches:
         
     def run(self) -> None:
         while self.__running:
+            self.__current_time = self.__get_current_time()
             self.__process_events()
             # Set background color
             self.__window.fill(YELLOW_COLOR)
@@ -48,15 +50,62 @@ class MechanicalWatches:
             (WINDOW_HALF_WIDTH, WINDOW_HALF_HEIGHT), 
             watches_bg_radius
         )
-    
-        # Time 
-        current_time = self.__get_current_time()
-        time_str = f"{current_time[0]}:{current_time[1]}:{current_time[2]}"
-        text = self.__sys_font.render(f"{time_str}", True, RED_COLOR)
 
-        self.__window.blit(text, (10, 10))
+        # Seconds arrow
+        self.__draw_clock_hand(
+            watches_bg_radius,
+            GREEN_COLOR,
+            3,
+            self.__current_time[2],
+            6,
+            WINDOW_HALF_HEIGHT,
+            WINDOW_HALF_WIDTH
+        )
 
-    def __get_current_time(self) -> None:
+        # Minutes arrow
+        self.__draw_clock_hand(
+            watches_bg_radius, 
+            PINK_COLOR, 
+            6, 
+            self.__current_time[1], 
+            6,
+            WINDOW_HALF_HEIGHT,
+            WINDOW_HALF_WIDTH
+        )
+
+        # Hours arrow
+        self.__draw_clock_hand(
+            watches_bg_radius * 0.6, 
+            BLUE_COLOR, 
+            9, 
+            self.__current_time[0], 
+            15,
+            WINDOW_HALF_HEIGHT,
+            WINDOW_HALF_WIDTH
+        )
+
+    def __draw_clock_hand(
+            self, length: float, color: tuple, thickness: int,
+            time: int, degrees: int, x_offset: float, y_offset: float
+        ) -> None:
+        end_point = self.__get_arrow_end_point(time, degrees)
+        pygame.draw.line(
+            self.__window, 
+            color, 
+            (WINDOW_HALF_WIDTH, WINDOW_HALF_HEIGHT),
+            (
+                length * end_point[0] + y_offset, 
+                length * end_point[1] + x_offset
+            ),
+            thickness
+        )
+
+    def __get_arrow_end_point(self, time_value: int, degrees: int) -> tuple:
+        radians = -(time_value * degrees * math.pi / 180.0) - math.pi
+
+        return (math.sin(radians), math.cos(radians))
+
+    def __get_current_time(self) -> tuple:
         now_datetime = datetime.now()
         tt = now_datetime.timetuple()
 
