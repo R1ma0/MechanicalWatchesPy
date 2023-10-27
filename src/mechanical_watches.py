@@ -3,11 +3,10 @@ import math
 from pygame.locals import *
 from datetime import datetime
 from preferences import *
+from watches_hand import *
 
 class MechanicalWatches:
 
-    __running = True
-    
     def __init__(self) -> None:
         pygame.init()
 
@@ -16,15 +15,41 @@ class MechanicalWatches:
 
         self.__clock = pygame.time.Clock()
         self.__sys_font = pygame.font.SysFont(None, 24)
+
+        self.__running = True
+        self.__watches_hands = (
+            WatchesHand(
+                self.__window,
+                thickness = HOURS_HAND_THICKNESS,
+                degrees_step = HOURS_HAND_DEGREES_STEP,
+                length = HOURS_HAND_LENGTH,
+                color = BLUE_COLOR
+            ),
+            WatchesHand(
+                self.__window,
+                thickness = MINUTES_HAND_THICKNESS,
+                degrees_step = MINUTES_HAND_DEGREES_STEP,
+                length = MINUTES_HAND_LENGTH,
+                color = RED_COLOR
+            ),
+            WatchesHand(
+                self.__window,
+                thickness = SECONDS_HAND_THICKNESS,
+                degrees_step = SECONDS_HAND_DEGREES_STEP,
+                length = SECONDS_HAND_LENGTH,
+                color = GREEN_COLOR
+            )
+        )
         
     def run(self) -> None:
         while self.__running:
             self.__current_time = self.__get_current_time()
-            self.__process_events()
-            # Set background color
+
             self.__window.fill(YELLOW_COLOR)
-            
+
+            self.__process_events()
             self.__draw_objects()
+
 
             pygame.display.flip()
 
@@ -45,64 +70,23 @@ class MechanicalWatches:
         # Watches background
         pygame.draw.circle(
             self.__window, 
-            RED_COLOR, 
+            WHITE_COLOR, 
             (WINDOW_HALF_WIDTH, WINDOW_HALF_HEIGHT), 
             WATCHES_BG_RADIUS
         )
 
-        # Seconds arrow
-        self.__draw_clock_hand(
-            self.__current_time[2],
-            SECONDS_HAND_LENGTH,
-            GREEN_COLOR,
-            SECONDS_HAND_THICKNESS,
-            SECONDS_HAND_DEGREES_STEP,
-            WINDOW_HALF_HEIGHT,
-            WINDOW_HALF_WIDTH
-        )
-
-        # Minutes arrow
-        self.__draw_clock_hand(
-            self.__current_time[1], 
-            MINUTES_HAND_LENGTH, 
-            PINK_COLOR, 
-            MINUTES_HAND_THICKNESS, 
-            MINUTES_HAND_DEGREES_STEP,
-            WINDOW_HALF_HEIGHT,
-            WINDOW_HALF_WIDTH
-        )
-
-        # Hours arrow
-        self.__draw_clock_hand(
-            self.__current_time[0], 
-            HOURS_HAND_LENGTH, 
-            BLUE_COLOR, 
-            HOURS_HAND_THICKNESS, 
-            HOURS_HAND_DEGREES_STEP,
-            WINDOW_HALF_HEIGHT,
-            WINDOW_HALF_WIDTH
-        )
-
-    def __draw_clock_hand(
-            self, time: int, length: float, color: tuple, thickness: int,
-            degrees: int, x_offset: float, y_offset: float
-        ) -> None:
-        end_point = self.__get_arrow_end_point(time, degrees)
-        pygame.draw.line(
+        # Watches edge
+        pygame.draw.circle(
             self.__window, 
-            color, 
-            (WINDOW_HALF_WIDTH, WINDOW_HALF_HEIGHT),
-            (
-                length * end_point[0] + y_offset, 
-                length * end_point[1] + x_offset
-            ),
-            thickness
+            BLACK_COLOR, 
+            (WINDOW_HALF_WIDTH, WINDOW_HALF_HEIGHT), 
+            WATCHES_BG_RADIUS,
+            WATCHES_BG_EDGE_THICKNESS
         )
 
-    def __get_arrow_end_point(self, time_value: int, degrees: int) -> tuple:
-        radians = -(time_value * degrees * math.pi / 180.0) - math.pi
-
-        return (math.sin(radians), math.cos(radians))
+        # Watches hands
+        for tci in range(len(self.__current_time)):
+            self.__watches_hands[tci].draw(self.__current_time[tci])
 
     def __get_current_time(self) -> tuple:
         now_datetime = datetime.now()
