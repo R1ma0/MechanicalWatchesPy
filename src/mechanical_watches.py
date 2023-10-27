@@ -43,50 +43,49 @@ class MechanicalWatches:
 
     def __draw_objects(self) -> None:
         # Watches background
-        watches_bg_radius= int(WINDOW_HALF_HEIGHT * 0.9)
         pygame.draw.circle(
             self.__window, 
             RED_COLOR, 
             (WINDOW_HALF_WIDTH, WINDOW_HALF_HEIGHT), 
-            watches_bg_radius
+            WATCHES_BG_RADIUS
         )
 
         # Seconds arrow
         self.__draw_clock_hand(
-            watches_bg_radius,
-            GREEN_COLOR,
-            3,
             self.__current_time[2],
-            6,
+            SECONDS_HAND_LENGTH,
+            GREEN_COLOR,
+            SECONDS_HAND_THICKNESS,
+            SECONDS_HAND_DEGREES_STEP,
             WINDOW_HALF_HEIGHT,
             WINDOW_HALF_WIDTH
         )
 
         # Minutes arrow
         self.__draw_clock_hand(
-            watches_bg_radius, 
-            PINK_COLOR, 
-            6, 
             self.__current_time[1], 
-            6,
+            MINUTES_HAND_LENGTH, 
+            PINK_COLOR, 
+            MINUTES_HAND_THICKNESS, 
+            MINUTES_HAND_DEGREES_STEP,
             WINDOW_HALF_HEIGHT,
             WINDOW_HALF_WIDTH
         )
 
         # Hours arrow
         self.__draw_clock_hand(
-            watches_bg_radius * 0.6, 
-            BLUE_COLOR, 
-            9, 
             self.__current_time[0], 
-            15,
+            HOURS_HAND_LENGTH, 
+            BLUE_COLOR, 
+            HOURS_HAND_THICKNESS, 
+            HOURS_HAND_DEGREES_STEP,
             WINDOW_HALF_HEIGHT,
             WINDOW_HALF_WIDTH
         )
 
     def __draw_clock_hand(
-            self, length: float, color: tuple, thickness: int,
-            time: int, degrees: int, x_offset: float, y_offset: float
+            self, time: int, length: float, color: tuple, thickness: int,
+            degrees: int, x_offset: float, y_offset: float
         ) -> None:
         end_point = self.__get_arrow_end_point(time, degrees)
         pygame.draw.line(
