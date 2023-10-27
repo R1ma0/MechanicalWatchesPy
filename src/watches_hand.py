@@ -14,8 +14,9 @@ class WatchesHand:
         self.__length = length
         self.__color = color
 
-    def draw(self, time: int):
+    def draw(self, time: int) -> None:
         y_end_point, x_end_point = self.__calculate_point_coordinates(time)
+
         pygame.draw.line(
             self.__window, 
             self.__color, 
