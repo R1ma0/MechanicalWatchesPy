@@ -17,6 +17,7 @@ class MechanicalWatches:
         self.__clock = pygame.time.Clock()
 
         self.__sys_font = pygame.font.SysFont(None, 24)
+
         self.__bg_image = pygame.image.load(BACKGROUND_IMAGE_PATH)
         self.__bg_image = pygame.transform.scale(
             self.__bg_image, (WINDOW_WIDTH, WINDOW_HEIGHT)
